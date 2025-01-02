@@ -30,7 +30,7 @@ def convert_audio():
             transcription = openai.Audio.transcribe(
                 model="whisper-1",
                 file=file,
-                response_format="text"
+                response_format="json"  # Certifique-se de usar 'json'
             )
         
         # Adicionando a extração do texto da transcrição
