@@ -1,116 +1,62 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Conversor de Áudio para Texto</title>
     <style>
         body {
+            background-image: url('/lusa_background.png'); /* Caminho para o logotipo da Lusa */
+            background-size: cover;
+            color: #ffffff;
             font-family: Arial, sans-serif;
+            text-align: center;
             margin: 0;
             padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background: url('lusa_logo_big.png') no-repeat center center fixed;
-            background-size: cover;
-            color: #333;
         }
-
-        .overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(255, 255, 255, 0.8); /* Transparência para maior legibilidade */
-        }
-
         .container {
-            position: relative;
-            z-index: 10;
-            background: #fff;
             padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            max-width: 500px;
-            width: 100%;
         }
-
-        h1 {
-            font-size: 26px;
-            color: #2c3e50;
-            margin-bottom: 20px;
-        }
-
-        input[type="file"] {
-            display: block;
-            margin: 20px auto;
-        }
-
-        button {
-            background: #007BFF;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        button:hover {
-            background: #0056b3;
-        }
-
-        #result {
+        #backButton {
+            display: none; /* Escondemos o botão inicialmente */
             margin-top: 20px;
-            padding: 10px;
-            background: #f1f1f1;
-            border-radius: 4px;
-            display: none;
         }
-
-        .btn-back {
-            margin-top: 15px;
-            display: inline-block;
-            background: #e74c3c;
-            color: #fff;
-            text-decoration: none;
-            padding: 10px 20px;
-            border-radius: 4px;
-        }
-
-        .btn-back:hover {
-            background: #c0392b;
+        #convertButton {
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
-    <div class="overlay"></div>
     <div class="container">
         <h1>Conversor de Áudio para Texto</h1>
-        <form id="audioForm">
-            <input type="file" id="audioFile" accept="audio/*" required>
-            <button type="submit">Converter</button>
-        </form>
-        <div id="result"></div>
-        <a href="/" class="btn-back">Voltar à Página Inicial</a>
+        <p>Envie o seu áudio e converta-o para texto!</p>
+
+        <!-- Formulário de upload de áudio -->
+        <input type="file" id="audioInput" accept="audio/*">
+        <button id="convertButton">Converter</button>
+
+        <!-- Área para exibir o texto transcrito -->
+        <div id="result" style="margin-top: 20px;"></div>
+
+        <!-- Botão para voltar à página inicial -->
+        <button id="backButton" onclick="goToHome()">Voltar à Página Principal</button>
     </div>
 
     <script>
-        document.getElementById('audioForm').addEventListener('submit', async (event) => {
-            event.preventDefault();
+        const convertButton = document.getElementById('convertButton');
+        const backButton = document.getElementById('backButton');
+        const audioInput = document.getElementById('audioInput');
+        const resultDiv = document.getElementById('result');
 
-            const audioFile = document.getElementById('audioFile').files[0];
-            if (!audioFile) {
+        // Função para processar o áudio
+        convertButton.addEventListener('click', async () => {
+            if (!audioInput.files[0]) {
                 alert('Por favor, selecione um ficheiro de áudio.');
                 return;
             }
 
             const formData = new FormData();
-            formData.append('audio', audioFile);
+            formData.append('audio', audioInput.files[0]);
 
             try {
                 const response = await fetch('/convert-audio', {
@@ -119,17 +65,41 @@
                 });
 
                 if (!response.ok) {
-                    throw new Error('Falha ao converter o áudio.');
+                    const error = await response.json();
+                    alert(`Erro: ${error.error}`);
+                    return;
                 }
 
-                const result = await response.json();
-                const resultDiv = document.getElementById('result');
-                resultDiv.textContent = result.text;
-                resultDiv.style.display = 'block';
+                const data = await response.json();
+                const transcription = data.text;
+
+                // Exibir o texto transcrito
+                resultDiv.innerHTML = `<p><strong>Texto transcrito:</strong></p><p>${transcription}</p>`;
+
+                // Exibir o botão "Voltar à Página Principal"
+                backButton.style.display = 'block';
+
+                // Esconder o botão "Converter" e o input de arquivo
+                convertButton.style.display = 'none';
+                audioInput.style.display = 'none';
             } catch (error) {
-                alert('Erro: ' + error.message);
+                alert(`Erro ao converter o áudio: ${error.message}`);
             }
         });
+
+        // Função para voltar à página inicial
+        function goToHome() {
+            // Limpar o resultado
+            resultDiv.innerHTML = '';
+
+            // Voltar ao estado inicial
+            backButton.style.display = 'none';
+            convertButton.style.display = 'block';
+            audioInput.style.display = 'block';
+
+            // Limpar o campo de seleção de arquivo
+            audioInput.value = '';
+        }
     </script>
 </body>
 </html>
