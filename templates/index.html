@@ -83,13 +83,14 @@
             formData.append('audio', audioFile);
 
             try {
-                const response = await fetch('https://voice-b5ji.onrender.com/convert-audio', {
+                const response = await fetch('/convert-audio', {
                     method: 'POST',
                     body: formData,
                 });
 
                 if (!response.ok) {
-                    throw new Error('Failed to convert audio.');
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Failed to convert audio.');
                 }
 
                 const result = await response.json();
