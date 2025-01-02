@@ -71,38 +71,43 @@
 
     <script>
         document.getElementById('audioForm').addEventListener('submit', async (event) => {
-            event.preventDefault();
+    event.preventDefault();
 
-            const audioFile = document.getElementById('audioFile').files[0];
-            if (!audioFile) {
-                alert('Please select an audio file.');
-                return;
-            }
+    const audioFile = document.getElementById('audioFile').files[0];
+    if (!audioFile) {
+        alert('Please select an audio file.');
+        return;
+    }
 
-            const formData = new FormData();
-            formData.append('audio', audioFile);
+    const formData = new FormData();
+    formData.append('audio', audioFile);
 
-            try {
-                const response = await fetch('/convert-audio', {
-                    method: 'POST',
-                    body: formData,
-                });
-
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.error || 'Failed to convert audio.');
-                }
-
-                const result = await response.json();
-                console.log(result);  // Verifique o conteúdo da resposta no console
-                
-                const resultDiv = document.getElementById('result');
-                resultDiv.textContent = result.text;
-                resultDiv.style.display = 'block';
-            } catch (error) {
-                alert('Error: ' + error.message);
-            }
+    try {
+        const response = await fetch('http://127.0.0.1:5000/convert-audio', {
+            method: 'POST',
+            body: formData,
         });
+
+        const contentType = response.headers.get('Content-Type');
+
+        if (!response.ok || !contentType.includes('application/json')) {
+            const errorMessage = await response.text();
+            throw new Error(`Failed to convert audio: ${errorMessage}`);
+        }
+
+        const result = await response.json();
+
+        if (result.error) {
+            throw new Error(result.error);
+        }
+
+        const resultDiv = document.getElementById('result');
+        resultDiv.textContent = result.text || "No text was returned.";
+        resultDiv.style.display = 'block';
+    } catch (error) {
+        alert('Error: ' + error.message);
+    }
+});
     </script>
 </body>
 </html>
