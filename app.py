@@ -33,8 +33,10 @@ def convert_audio():
                 response_format="text"
             )
         
-        # Adicione um print para ver o conteúdo da transcrição
-        print(f"Transcrição: {transcription}")
+        # Em vez de diretamente usar `transcription`, acesse o campo de texto se for necessário
+transcription_text = transcription.get("text", "")  # Ajuste conforme a estrutura da resposta
+print(f"Texto transcrito: {transcription_text}")
+
 
         return jsonify({'text': transcription})
 
