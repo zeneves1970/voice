@@ -83,7 +83,7 @@
             formData.append('audio', audioFile);
 
             try {
-                const response = await fetch('https://voice-b5ji.onrender.com/', {
+                const response = await fetch('https://voice-b5ji.onrender.com/convert-audio', {
                     method: 'POST',
                     body: formData,
                 });
