@@ -33,10 +33,14 @@ def convert_audio():
                 response_format="text"
             )
         
+        # Adicione um print para ver o conteúdo da transcrição
+        print(f"Transcrição: {transcription}")
+
         return jsonify({'text': transcription})
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))  # Obter a porta do ambiente ou usar 5000 como padrão
