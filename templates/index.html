@@ -94,6 +94,8 @@
                 }
 
                 const result = await response.json();
+                console.log(result);  // Verifique o conteúdo da resposta no console
+                
                 const resultDiv = document.getElementById('result');
                 resultDiv.textContent = result.text;
                 resultDiv.style.display = 'block';
