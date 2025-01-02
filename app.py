@@ -33,18 +33,15 @@ def convert_audio():
                 response_format="text"
             )
         
-        # Em vez de diretamente usar `transcription`, acesse o campo de texto se for necessário
-transcription_text = transcription.get("text", "")  # Ajuste conforme a estrutura da resposta
-print(f"Texto transcrito: {transcription_text}")
+        # Adicionando a extração do texto da transcrição
+        transcription_text = transcription.get("text", "")  # Ajuste conforme a estrutura da resposta
+        print(f"Texto transcrito: {transcription_text}")
 
-
-        return jsonify({'text': transcription})
+        return jsonify({'text': transcription_text})
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))  # Obter a porta do ambiente ou usar 5000 como padrão
     app.run(host='0.0.0.0', port=port, debug=True)
-
