@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 import openai
 import os
+from flask import render_template
 
 # Configurar chave de API da OpenAI
 openai.api_key = os.getenv("OPENAI_API_KEY")
