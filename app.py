@@ -1,15 +1,18 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 import openai
 import os
-from flask import render_template
 
-# Configurar chave de API da OpenAI
+# Configurar chave de API da OpenAI a partir das variáveis de ambiente
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 app = Flask(__name__)
 
 # Certifique-se de que a pasta 'uploads' existe para salvar arquivos temporários
 os.makedirs('uploads', exist_ok=True)
+
+@app.route('/')
+def index():
+    return render_template('index.html')
 
 @app.route('/convert-audio', methods=['POST'])
 def convert_audio():
@@ -36,6 +39,4 @@ def convert_audio():
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-    @app.route('/')
-def index():
-    return render_template('index.html')
+    app.run(debug=True)
