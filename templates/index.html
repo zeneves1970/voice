@@ -57,6 +57,15 @@
             border-radius: 4px;
             display: none;
         }
+
+        #result button {
+            margin-top: 10px;
+            background: #28a745;
+        }
+
+        #result button:hover {
+            background: #218838;
+        }
     </style>
 </head>
 <body>
@@ -66,48 +75,50 @@
             <input type="file" id="audioFile" accept="audio/*" required>
             <button type="submit">Convert</button>
         </form>
-        <div id="result"></div>
+        <div id="result">
+            <p id="transcription"></p>
+            <button id="backButton">Voltar à Página Inicial</button>
+        </div>
     </div>
 
     <script>
         document.getElementById('audioForm').addEventListener('submit', async (event) => {
-    event.preventDefault();
+            event.preventDefault();
 
-    const audioFile = document.getElementById('audioFile').files[0];
-    if (!audioFile) {
-        alert('Please select an audio file.');
-        return;
-    }
+            const audioFile = document.getElementById('audioFile').files[0];
+            if (!audioFile) {
+                alert('Por favor, selecione um arquivo de áudio.');
+                return;
+            }
 
-    const formData = new FormData();
-    formData.append('audio', audioFile);
+            const formData = new FormData();
+            formData.append('audio', audioFile);
 
-    try {
-        const response = await fetch('https://voice-b5ji.onrender.com/convert-audio', {
-            method: 'POST',
-            body: formData,
+            try {
+                const response = await fetch('https://voice-b5ji.onrender.com/convert-audio', {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                if (!response.ok) {
+                    throw new Error('Erro ao converter áudio.');
+                }
+
+                const result = await response.json();
+                const resultDiv = document.getElementById('result');
+                const transcriptionText = document.getElementById('transcription');
+                
+                transcriptionText.textContent = result.text || "Nenhum texto transcrito.";
+                resultDiv.style.display = 'block';
+            } catch (error) {
+                alert('Erro: ' + error.message);
+            }
         });
 
-        const contentType = response.headers.get('Content-Type');
-
-        if (!response.ok || !contentType.includes('application/json')) {
-            const errorMessage = await response.text();
-            throw new Error(`Failed to convert audio: ${errorMessage}`);
-        }
-
-        const result = await response.json();
-
-        if (result.error) {
-            throw new Error(result.error);
-        }
-
-        const resultDiv = document.getElementById('result');
-        resultDiv.textContent = result.text || "No text was returned.";
-        resultDiv.style.display = 'block';
-    } catch (error) {
-        alert('Error: ' + error.message);
-    }
-});
+        // Evento para o botão "Voltar à Página Inicial"
+        document.getElementById('backButton').addEventListener('click', () => {
+            location.reload(); // Recarrega a página para retornar ao estado inicial
+        });
     </script>
 </body>
 </html>
