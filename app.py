@@ -33,10 +33,8 @@ def convert_audio():
                 response_format="json"  # Certifique-se de usar 'json'
             )
         
-        # Adicionando a extração do texto da transcrição
-        transcription_text = transcription.get("text", "")  # Ajuste conforme a estrutura da resposta
-        print(f"Texto transcrito: {transcription_text}")
-
+        # Validar o retorno da API
+        transcription_text = transcription.get("text", "Transcrição não disponível.")
         return jsonify({'text': transcription_text})
 
     except Exception as e:
