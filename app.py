@@ -3,7 +3,7 @@ import openai
 import os
 
 # Configurar chave de API da OpenAI
-openai.api_key_path = "C:/Users/jneves/Desktop/iscte/informacao de agencia/ntc/.openai_key"
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 app = Flask(__name__)
 
