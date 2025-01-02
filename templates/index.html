@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Audio to Text Converter</title>
+    <title>Conversor de Áudio para Texto</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -13,21 +13,35 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: #f4f4f9;
+            background: url('lusa_logo_big.png') no-repeat center center fixed;
+            background-size: cover;
+            color: #333;
+        }
+
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8); /* Transparência para legibilidade */
         }
 
         .container {
+            position: relative;
+            z-index: 10;
             background: #fff;
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             text-align: center;
-            max-width: 400px;
+            max-width: 600px;
             width: 100%;
         }
 
         h1 {
-            font-size: 24px;
+            font-size: 26px;
+            color: #2c3e50;
             margin-bottom: 20px;
         }
 
@@ -40,7 +54,7 @@
             background: #007BFF;
             color: white;
             border: none;
-            padding: 10px 20px;
+            padding: 12px 24px;
             border-radius: 4px;
             cursor: pointer;
             font-size: 16px;
@@ -55,30 +69,37 @@
             padding: 10px;
             background: #f1f1f1;
             border-radius: 4px;
-            display: none;
+            max-height: 300px; /* Limite de altura para exibir muito texto */
+            overflow-y: auto; /* Adicionar rolagem se o texto for grande */
+            white-space: pre-wrap; /* Preservar quebras de linha */
+            text-align: left;
         }
 
-        #result button {
-            margin-top: 10px;
-            background: #28a745;
+        .btn-back {
+            margin-top: 15px;
+            display: inline-block;
+            background: #e74c3c;
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 4px;
         }
 
-        #result button:hover {
-            background: #218838;
+        .btn-back:hover {
+            background: #c0392b;
         }
     </style>
 </head>
 <body>
+    <div class="overlay"></div>
     <div class="container">
-        <h1>Audio to Text Converter</h1>
+        <h1>Conversor de Áudio para Texto</h1>
         <form id="audioForm">
             <input type="file" id="audioFile" accept="audio/*" required>
-            <button type="submit">Convert</button>
+            <button type="submit">Converter</button>
         </form>
-        <div id="result">
-            <p id="transcription"></p>
-            <button id="backButton">Voltar à Página Inicial</button>
-        </div>
+        <div id="result"></div>
+        <a href="/" class="btn-back">Voltar à Página Inicial</a>
     </div>
 
     <script>
@@ -87,7 +108,7 @@
 
             const audioFile = document.getElementById('audioFile').files[0];
             if (!audioFile) {
-                alert('Por favor, selecione um arquivo de áudio.');
+                alert('Por favor, selecione um ficheiro de áudio.');
                 return;
             }
 
@@ -95,29 +116,22 @@
             formData.append('audio', audioFile);
 
             try {
-                const response = await fetch('https://voice-b5ji.onrender.com/convert-audio', {
+                const response = await fetch('voice-b5ji.onrender.com/convert-audio/convert-audio', {
                     method: 'POST',
                     body: formData,
                 });
 
                 if (!response.ok) {
-                    throw new Error('Erro ao converter áudio.');
+                    throw new Error('Falha ao converter o áudio.');
                 }
 
                 const result = await response.json();
                 const resultDiv = document.getElementById('result');
-                const transcriptionText = document.getElementById('transcription');
-                
-                transcriptionText.textContent = result.text || "Nenhum texto transcrito.";
+                resultDiv.textContent = result.text;
                 resultDiv.style.display = 'block';
             } catch (error) {
                 alert('Erro: ' + error.message);
             }
-        });
-
-        // Evento para o botão "Voltar à Página Inicial"
-        document.getElementById('backButton').addEventListener('click', () => {
-            location.reload(); // Recarrega a página para retornar ao estado inicial
         });
     </script>
 </body>
